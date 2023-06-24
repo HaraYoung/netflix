@@ -5,11 +5,8 @@ import {
   useScroll,
   useMotionValueEvent,
   motion,
-  useAnimate,
   useAnimation,
 } from "framer-motion";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
 const Nav = styled(motion.nav)`
   display: flex;
