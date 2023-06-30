@@ -6,7 +6,7 @@ import { RecoilRoot } from "recoil";
 import { BrowserRouter } from "react-router-dom";
 import { Reset } from "styled-reset";
 import { createGlobalStyle } from "styled-components";
-
+import { ReactQueryDevtools } from "react-query/devtools";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
@@ -30,6 +30,7 @@ root.render(
   <BrowserRouter>
     <RecoilRoot>
       <QueryClientProvider client={client}>
+        <ReactQueryDevtools initialIsOpen={true} />
         <Reset />
         <GlobalStyle />
         <App />

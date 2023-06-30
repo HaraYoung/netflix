@@ -9,13 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useQuery } from "react-query";
-import {
-  IGetMoviesResult,
-  getMovies,
-  IGetMoviesGenres,
-  getMoviesGenres,
-  IMovie,
-} from "../api";
+import { IGetMoviesGenres, getMoviesGenres, IMovie } from "../api";
 import { useNavigate } from "react-router-dom";
 
 const Box = styled(motion.div)<{ $bgPhoto: string }>`
@@ -28,12 +22,7 @@ const Box = styled(motion.div)<{ $bgPhoto: string }>`
   cursor: pointer;
   position: relative;
   z-index: 100;
-  &:first-child {
-    transform-origin: center left;
-  }
-  &:last-child {
-    transform-origin: center right;
-  }
+  min-width: 110px;
   .flex {
     display: flex;
   }
@@ -87,6 +76,7 @@ const boxVariants = {
   normal: { scale: 1 },
   hover: {
     scale: 1.5,
+    zIndex: 200,
     transition: {
       delay: 0.5,
       type: "tween",
@@ -96,6 +86,7 @@ const boxVariants = {
 };
 const infoVariants = {
   hover: {
+    zIndex: 100,
     opacity: 1,
     transition: {
       delay: 0.5,
@@ -114,37 +105,37 @@ const SliderCard = ({ movie }: { movie: IMovie }) => {
   const onBoxClicked = (movieId: number) => navigate(`/movies/${movieId}`);
 
   return (
-    <Box
-      $bgPhoto={makeImagePath(movie.poster_path, "w500")}
-      variants={boxVariants}
-      whileHover="hover"
-      initial="normal"
-      transition={{ type: "tween" }}
-      onClick={() => onBoxClicked(movie.id)}
-      layoutId={movie.title}
-    >
-      <div>
-        <Info variants={infoVariants}>
-          <h4>{movie.title}</h4>
-          <div>
+      <Box
+        $bgPhoto={makeImagePath(movie.poster_path, "w500")}
+        variants={boxVariants}
+        whileHover="hover"
+        initial="normal"
+        transition={{ type: "tween" }}
+        onClick={() => onBoxClicked(movie.id)}
+        layoutId={movie.id + ''}
+      >
+        <div>
+          <Info variants={infoVariants}>
+            <h4>{movie.title}</h4>
             <div>
-              <span>
-                <FontAwesomeIcon icon={faCirclePlus} size="2xs" />
-                <FontAwesomeIcon icon={faThumbsUp} size="2xs" />
-              </span>
-              <FontAwesomeIcon icon={faCircleChevronDown} size="2xs" />
+              <div>
+                <span>
+                  <FontAwesomeIcon icon={faCirclePlus} size="2xs" />
+                  <FontAwesomeIcon icon={faThumbsUp} size="2xs" />
+                </span>
+                <FontAwesomeIcon icon={faCircleChevronDown} size="2xs" />
+              </div>
+              <Genres className={window.outerWidth >= 1068 ? "flex" : "float"}>
+                {genres?.genres
+                  .filter((item) => movie.genre_ids.includes(item.id))
+                  .map((v, i) => (
+                    <li key={i}>{i !== 0 ? `◾ ${v.name}` : v.name}</li>
+                  ))}
+              </Genres>
             </div>
-            <Genres className={window.outerWidth >= 1068 ? "flex" : "float"}>
-              {genres?.genres
-                .filter((item) => movie.genre_ids.includes(item.id))
-                .map((v, i) => (
-                  <li key={i}>{i !== 0 ? `◾ ${v.name}` : v.name}</li>
-                ))}
-            </Genres>
-          </div>
-        </Info>
-      </div>
-    </Box>
+          </Info>
+        </div>
+      </Box>
   );
 };
 
