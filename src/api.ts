@@ -38,21 +38,29 @@ export function getMoviesGenres() {
 
 //영화 상세 정보
 //https://api.themoviedb.org/3/movie/667538?api_key=e08a6da350ae17b80b2a203ff78e7f16&language=ko
-export interface IGetMovieDetails {
+export interface IGetMovieDetail {
   id: number;
   backdrop_path: string; //bgImage
   genres: IGenres[]; //장르
-  original_language: string; //원어
+  original_title: string; //원어
   overview: string; //줄거리
   vote_average: number; //별점
   poster_path: string; //포스터 이미지
   title: string; //제목
   tagline: string; //부재목
   release_date: string; //출시일
+  runtime: number; //러닝타임
 }
-export function getMovieDetail(movieId: string) {
+//한국어 버전
+export function getMovieDetailKo(movieId: string) {
   return fetch(
     `${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}&${LANGUAGE}`
+  ).then((response) => response.json());
+}
+//영어 버전
+export function getMovieDetailEn(movieId: string) {
+  return fetch(
+    `${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}`
   ).then((response) => response.json());
 }
 

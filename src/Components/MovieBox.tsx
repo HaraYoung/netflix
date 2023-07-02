@@ -10,9 +10,10 @@ import {
   faCirclePlus,
   faPlay,
   faCircleXmark,
+  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { IGetMovieDetails, getMovieDetail } from "../api";
+import { IGetMovieDetail, getMovieDetailKo, getMovieDetailEn } from "../api";
 import { makeImagePath } from "../utils";
 import TypeContext from "../context";
 
@@ -56,19 +57,19 @@ const BoxContent = styled.div`
   img {
     width: 250px;
   }
-  div:last-child {
-    margin: 1em;
-    div {
-      margin: 0.5em 0;
+`;
+const Title = styled.div`
+  div {
+    &:first-child {
+      font-size: 1.7em;
+      font-weight: bold;
+    }
+    &:last-child {
+      font-size: 1.2em;
+      margin-top: 0.5em;
+      margin-left: 0.2em;
     }
   }
-`;
-const Title = styled.h2`
-  font-size: 1.7em;
-  font-weight: bold;
-`;
-const Tagline = styled.div`
-  font-size: 18px;
 `;
 const IconBox = styled.div`
   display: flex;
@@ -94,6 +95,9 @@ const IconBox = styled.div`
     }
   }
 `;
+const GenreContainer = styled.div`
+  margin: 1.5em 0;
+`;
 const Genre = styled.span`
   padding: 0.2em 0.4em;
   background-color: white;
@@ -103,19 +107,80 @@ const Genre = styled.span`
   font-size: 14px;
   font-weight: bolder;
 `;
-const Overview = styled.div``;
+const MovieInfoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%;
+  margin: 1em 0;
+  margin-left: 0.2em;
+`;
+const VoteAverage = styled.div`
+  font-weight: bold;
+  background-color: rgba(128, 128, 128, 0.8);
+  padding: 0.4em;
+  border-radius: 4px;
+  svg {
+    margin-right: 0.3em;
+    color: yellow;
+  }
+`;
+const ReleaseDate = styled.div`
+  font-weight: bold;
+  background-color: rgba(128, 128, 128, 0.8);
+  color: white;
+  padding: 0.4em;
+  border-radius: 4px;
+`;
+const RunTime = styled.div`
+  font-weight: bold;
+  background-color: rgba(128, 128, 128, 0.8);
+  color: white;
+  padding: 0.4em;
+  border-radius: 4px;
+`;
+const Tagline = styled.div`
+  margin: 0.5em 0;
+  font-size: 18px;
+  span {
+    padding: 0 0.1em;
+    background-color: rgba(128, 128, 128, 1);
+    margin-right: 0.5em;
+  }
+`;
+const Overview = styled.div`
+  line-height: 1.2;
+  word-break: keep-all;
+  margin-top: 1em;
+`;
+const PosterImg = styled.div`
+  margin: 1em;
+  img {
+    border-radius: 10px;
+  }
+`;
 
 const MovieBox = ({ movieId }: { movieId: string }) => {
   const [isVideo, setIsVideo] = React.useState(false);
   const { scrollY } = useScroll();
 
-  const { data: movie, isLoading } = useQuery<IGetMovieDetails>(
-    ["movies", "details"],
-    () => getMovieDetail(movieId),
+  const { data: movie_ko, isLoading: isLoading_ko } = useQuery<IGetMovieDetail>(
+    ["movies_ko", "details_ko"],
+    () => getMovieDetailKo(movieId),
     {
       enabled: !!movieId,
     }
   );
+
+  //한국어 tagline, overview가 없는 경우 사용할 영문 데이터
+  const { data: movie_en } = useQuery<IGetMovieDetail>(
+    ["movies_en", "details_en"],
+    () => getMovieDetailEn(movieId),
+    {
+      enabled: !!movieId,
+    }
+  );
+
   const navigate = useNavigate();
   const { type, setType } = useContext(TypeContext);
   const onOverlayClick = () => {
@@ -127,17 +192,18 @@ const MovieBox = ({ movieId }: { movieId: string }) => {
 
   return (
     <>
-      {isLoading ? (
+      {isLoading_ko ? (
         <div>Loading..</div>
       ) : (
         movieIdMatch &&
-        movie && (
+        movie_ko && (
+          //youtube api연결 시 사용할 영역
           <BoxContainer
             style={{ top: scrollY.get() + 100 }}
             layoutId={movieId + type}
             transition={{ delay: 0.3 }}
           >
-            <BoxBgImg $bgPhoto={makeImagePath(movie.backdrop_path)} />
+            <BoxBgImg $bgPhoto={makeImagePath(movie_ko.backdrop_path)} />
             <ExitIcon>
               <FontAwesomeIcon
                 icon={faCircleXmark}
@@ -155,28 +221,42 @@ const MovieBox = ({ movieId }: { movieId: string }) => {
             ) : (
               <BoxContent>
                 <div>
-                  <Title>{movie.title}</Title>
-                  <div>
-                    {movie.genres.map((item) => (
+                  <Title>
+                    <div>{movie_ko.title}</div>
+                    <div>{movie_ko.original_title}</div>
+                  </Title>
+                  <GenreContainer>
+                    {movie_ko.genres.map((item) => (
                       <Genre key={item.id}>{item.name}</Genre>
                     ))}
-                  </div>
-                  <div>{movie.release_date}</div>
-                  <div>{movie.vote_average}</div>
-                  <IconBox>
-                    <span>
-                      <FontAwesomeIcon icon={faCirclePlus} size="xl" />
-                    </span>
-                    <span>
-                      <FontAwesomeIcon icon={faThumbsUp} size="xl" />
-                    </span>
-                  </IconBox>
-                  <Tagline>{movie.tagline}</Tagline>
-                  <Overview>{movie.overview}</Overview>
+                  </GenreContainer>
+                  <MovieInfoContainer>
+                    <IconBox>
+                      <span>
+                        <FontAwesomeIcon icon={faCirclePlus} size="lg" />
+                      </span>
+                      <span>
+                        <FontAwesomeIcon icon={faThumbsUp} size="lg" />
+                      </span>
+                    </IconBox>
+                    <ReleaseDate>{movie_ko.release_date}</ReleaseDate>
+                    <VoteAverage>
+                      <FontAwesomeIcon icon={faStar} />
+                      {movie_ko.vote_average.toFixed(1)}
+                    </VoteAverage>
+                    <RunTime>{movie_ko.runtime}분</RunTime>
+                  </MovieInfoContainer>
+                  <Tagline>
+                    <span></span>
+                    {movie_ko.tagline ? movie_ko.tagline : movie_en?.tagline}
+                  </Tagline>
+                  <Overview>
+                    {movie_ko.overview ? movie_ko.overview : movie_en?.overview}
+                  </Overview>
                 </div>
-                <div>
-                  <img src={makeImagePath(movie.poster_path)} alt="poster" />
-                </div>
+                <PosterImg>
+                  <img src={makeImagePath(movie_ko.poster_path)} alt="poster" />
+                </PosterImg>
               </BoxContent>
             )}
           </BoxContainer>
