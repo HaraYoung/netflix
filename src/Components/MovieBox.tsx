@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { motion, useScroll } from "framer-motion";
-import { useMatch, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useMatch } from "react-router-dom";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 
@@ -14,6 +14,7 @@ import {
 
 import { IGetMovieDetails, getMovieDetail } from "../api";
 import { makeImagePath } from "../utils";
+import TypeContext from "../context";
 
 const BoxContainer = styled(motion.div)`
   background-color: #181818;
@@ -109,67 +110,77 @@ const MovieBox = ({ movieId }: { movieId: string }) => {
   const { scrollY } = useScroll();
 
   const { data: movie, isLoading } = useQuery<IGetMovieDetails>(
-    ["movies", "details"], 
+    ["movies", "details"],
     () => getMovieDetail(movieId),
     {
-      enabled: !!movieId, 
+      enabled: !!movieId,
     }
   );
-
   const navigate = useNavigate();
+  const { type, setType } = useContext(TypeContext);
+  const onOverlayClick = () => {
+    navigate("/");
+    setType("");
+  };
 
-  const onOverlayClick = () => navigate("/");
+  const movieIdMatch = useMatch(`/movies/${movieId}`);
 
   return (
     <>
-      {movie && (
-        <BoxContainer
-          style={{ top: scrollY.get() + 100 }}
-          layoutId={movie.id + ''}
-        >
-          <BoxBgImg $bgPhoto={makeImagePath(movie.backdrop_path)} />
-          <ExitIcon>
-            <FontAwesomeIcon
-              icon={faCircleXmark}
-              size="2xl"
-              onClick={onOverlayClick}
-            />
-          </ExitIcon>
-          {isVideo ? (
-            <IconBox>
-              <div className="player">
-                <FontAwesomeIcon icon={faPlay} size="lg" />
-                <span>재생</span>
-              </div>
-            </IconBox>
-          ) : (
-            <BoxContent>
-              <div>
-                <Title>{movie.title}</Title>
-                <div>
-                  {movie.genres.map((item) => (
-                    <Genre>{item.name}</Genre>
-                  ))}
+      {isLoading ? (
+        <div>Loading..</div>
+      ) : (
+        movieIdMatch &&
+        movie && (
+          <BoxContainer
+            style={{ top: scrollY.get() + 100 }}
+            layoutId={movieId + type}
+            transition={{ delay: 0.3 }}
+          >
+            <BoxBgImg $bgPhoto={makeImagePath(movie.backdrop_path)} />
+            <ExitIcon>
+              <FontAwesomeIcon
+                icon={faCircleXmark}
+                size="2xl"
+                onClick={onOverlayClick}
+              />
+            </ExitIcon>
+            {isVideo ? (
+              <IconBox>
+                <div className="player">
+                  <FontAwesomeIcon icon={faPlay} size="lg" />
+                  <span>재생</span>
                 </div>
-                <div>{movie.release_date}</div>
-                <div>{movie.vote_average}</div>
-                <IconBox>
-                  <span>
-                    <FontAwesomeIcon icon={faCirclePlus} size="xl" />
-                  </span>
-                  <span>
-                    <FontAwesomeIcon icon={faThumbsUp} size="xl" />
-                  </span>
-                </IconBox>
-                <Tagline>{movie.tagline}</Tagline>
-                <Overview>{movie.overview}</Overview>
-              </div>
-              <div>
-                <img src={makeImagePath(movie.poster_path)} alt="poster" />
-              </div>
-            </BoxContent>
-          )}
-        </BoxContainer>
+              </IconBox>
+            ) : (
+              <BoxContent>
+                <div>
+                  <Title>{movie.title}</Title>
+                  <div>
+                    {movie.genres.map((item) => (
+                      <Genre key={item.id}>{item.name}</Genre>
+                    ))}
+                  </div>
+                  <div>{movie.release_date}</div>
+                  <div>{movie.vote_average}</div>
+                  <IconBox>
+                    <span>
+                      <FontAwesomeIcon icon={faCirclePlus} size="xl" />
+                    </span>
+                    <span>
+                      <FontAwesomeIcon icon={faThumbsUp} size="xl" />
+                    </span>
+                  </IconBox>
+                  <Tagline>{movie.tagline}</Tagline>
+                  <Overview>{movie.overview}</Overview>
+                </div>
+                <div>
+                  <img src={makeImagePath(movie.poster_path)} alt="poster" />
+                </div>
+              </BoxContent>
+            )}
+          </BoxContainer>
+        )
       )}
     </>
   );

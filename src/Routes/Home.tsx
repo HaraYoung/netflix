@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { IGetMoviesResult, getMovies, getMovieTopRated } from "../api";
 import { makeImagePath } from "../utils";
+import TypeContext from "../context";
 
 import MovieBox from "../Components/MovieBox";
 import Slider from "../Components/Slider";
@@ -58,17 +59,27 @@ const Home = () => {
   const { data: topRated, isLoading: topRatedLoading } =
     useQuery<IGetMoviesResult>(["movies", "topRated"], getMovieTopRated);
 
+    const [type, setType] = React.useState("");
+  
+    const typeContextValue = {
+      type,
+      setType,
+    };
   const navigate = useNavigate();
 
-  const onOverlayClick = () => navigate("/");
+  const onOverlayClick = () => {
+    navigate("/")
+    setType('')
+  };
 
   const moviePathMatch = useMatch(`/movies/:movieId`);
 
   const params = useParams();
   const movieId = params.movieId || "";
 
+
   return (
-    <>
+    <TypeContext.Provider value={ typeContextValue }>
       <Wrapper>
         {nowPlayingLoading ? (
           <div>Loading...</div>
@@ -83,11 +94,12 @@ const Home = () => {
             >
               <Title>{nowPlaying?.results[0].title}</Title>
               <Overview>{nowPlaying?.results[0].overview}</Overview>
+              {/* <button>자세히 보기</button> */}
             </Banner>
             {nowPlaying && (
               <SliderArea>
                 <CategoryTitle>현재 상영중인 영화</CategoryTitle>
-                <Slider movieData={nowPlaying} type='nowPlaying'/>
+                <Slider movieData={nowPlaying} type="nowPlaying" />
               </SliderArea>
             )}
             <SliderArea>
@@ -97,7 +109,7 @@ const Home = () => {
             {topRated && (
               <SliderArea>
                 <CategoryTitle>평점 높은 영화</CategoryTitle>
-                <Slider movieData={topRated} type='topRated'/>
+                <Slider movieData={topRated} type="topRated" />
               </SliderArea>
             )}
 
@@ -116,7 +128,7 @@ const Home = () => {
           </>
         )}
       </Wrapper>
-    </>
+    </TypeContext.Provider>
   );
 };
 

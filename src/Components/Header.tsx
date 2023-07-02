@@ -35,12 +35,10 @@ const Logo = styled(motion.svg)`
     stroke: white;
   }
 `;
-
 const Items = styled.ul`
   display: flex;
   align-items: center;
 `;
-
 const Item = styled.li`
   margin-right: 20px;
   a {
@@ -56,7 +54,6 @@ const Item = styled.li`
   justify-content: center;
   flex-direction: column;
 `;
-
 const ItemBorder = styled(motion.span)`
   position: absolute;
   border-bottom: 2px solid white;
@@ -65,7 +62,6 @@ const ItemBorder = styled(motion.span)`
   right: 0;
   margin: 0 auto;
 `;
-
 const Search = styled.span`
   padding-right: 5em;
   position: relative;
@@ -76,7 +72,6 @@ const Search = styled.span`
     color: white;
   }
 `;
-
 const Input = styled(motion.input)`
   transform-origin: right center;
   position: absolute;
@@ -91,7 +86,7 @@ const logoVariants = {
     fillOpacity: 1,
   },
   active: {
-    fillOpacity: [0, 1, 0],
+    fillOpacity: [0, 1, 0, 1],
   },
 };
 

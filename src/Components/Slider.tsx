@@ -9,24 +9,33 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IGetMoviesResult } from "../api";
 import SliderCard from "./SliderCard";
 
-const SliderContainer = styled(motion.div)``;
+const SliderContainer = styled(motion.div)`
+  min-height: 210px;
+  position: relative;
+`;
 const Row = styled(motion.div)`
   display: grid;
   gap: 5px;
   grid-template-columns: repeat(6, 1fr);
   width: 93%;
-  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
   margin-top: 0.5em;
+
   .arrow-area {
-    width: 100%;
+    width: 106%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: absolute;
-    left: 0;
     z-index: 0;
+    left: -3%;
+    top: 3%;
     svg {
-      padding: 2.5em 0.2em;
+      padding: 2.5em 0.1em;
       cursor: pointer;
       &:hover {
         background-color: rgba(1, 1, 1, 0.5);
@@ -37,8 +46,8 @@ const Row = styled(motion.div)`
 const PagesIndex = styled(motion.div)`
   width: 100%;
   position: absolute;
-  top: 12%;
-  right: 2.5%;
+  top: -13%;
+  right: 3.5%;
   display: flex;
   justify-content: flex-end;
   .page-border {
@@ -128,7 +137,7 @@ const Slider = ({
               .slice(1)
               .slice(offset * page, offset * page + offset) //페이지 네이션과 같은 처리
               .map((movie) => (
-                <SliderCard movie={movie} key={movie.id + type}/>
+                <SliderCard movie={movie} key={movie.id + type} type={type}/>
               ))}
           </Row>
         </AnimatePresence>
