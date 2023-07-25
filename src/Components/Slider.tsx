@@ -7,16 +7,18 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IGetMoviesResult } from "../api";
+
 import SliderCard from "./SliderCard";
+import Popular from "../Components/Popular";
 
 const SliderContainer = styled(motion.div)`
   min-height: 210px;
   position: relative;
 `;
-const Row = styled(motion.div)`
+const Row = styled(motion.div)<{ offset: number }>`
   display: grid;
   gap: 5px;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: ${(props) =>  `repeat(${props.offset}, 1fr)`};
   width: 93%;
   position: absolute;
   top: 0;
@@ -72,7 +74,7 @@ const Slider = ({
   movieData: IGetMoviesResult;
   type: string;
 }) => {
-  const offset = 6;
+  const offset = type === "popular" ? 5 : 6;
 
   const [page, setPage] = React.useState(0);
   const [leaving, setLeaving] = React.useState(false);
@@ -120,6 +122,7 @@ const Slider = ({
             animate="visible"
             exit="exit"
             transition={{ type: "tween", duration: 0.5 }}
+            offset={offset}
           >
             <div className="arrow-area">
               <FontAwesomeIcon
@@ -133,12 +136,39 @@ const Slider = ({
                 onClick={() => incrasePage("right")}
               />
             </div>
-            {movieData.results
-              .slice(1)
-              .slice(offset * page, offset * page + offset) //페이지 네이션과 같은 처리
-              .map((movie) => (
-                <SliderCard movie={movie} key={movie.id + type} type={type}/>
-              ))}
+            {type === "nowPlaying"
+              ? movieData.results
+                  .slice(1)
+                  .slice(offset * page, offset * page + offset) //페이지 네이션과 같은 처리
+                  .map((movie) => (
+                    <SliderCard
+                      movie={movie}
+                      key={movie.id + type}
+                      type={type}
+                    />
+                  ))
+              : type === "popular"
+              // slice로 10개로 줄이기
+              ? movieData.results
+                  .slice(offset * page, offset * page + offset)
+                  .map((movie, idx) => (
+                    <Popular
+                      movie={movie}
+                      key={movie.id + type}
+                      type={type}
+                      idx={idx}
+                      page={page}
+                    />
+                  ))
+              : movieData.results
+                  .slice(offset * page, offset * page + offset)
+                  .map((movie) => (
+                    <SliderCard
+                      movie={movie}
+                      key={movie.id + type}
+                      type={type}
+                    />
+                  ))}
           </Row>
         </AnimatePresence>
       )}

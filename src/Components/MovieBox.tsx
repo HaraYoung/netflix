@@ -197,9 +197,8 @@ const MovieBox = ({ movieId }: { movieId: string }) => {
       ) : (
         movieIdMatch &&
         movie_ko && (
-          //youtube api연결 시 사용할 영역
           <BoxContainer
-            style={{ top: scrollY.get() + 100 }}
+          style={{ top: scrollY.get() + 100 }}
             layoutId={movieId + type}
             transition={{ delay: 0.3 }}
           >
@@ -211,6 +210,7 @@ const MovieBox = ({ movieId }: { movieId: string }) => {
                 onClick={onOverlayClick}
               />
             </ExitIcon>
+            {/* youtube api연결 시 사용할 영역 */}
             {isVideo ? (
               <IconBox>
                 <div className="player">

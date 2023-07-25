@@ -1,8 +1,8 @@
-import React, {useContext} from "react";
+import React,{useContext} from "react";
 import styled from "styled-components";
+import { useQuery } from "react-query";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "react-query";
 import {
   faCirclePlus,
   faThumbsUp,
@@ -14,17 +14,12 @@ import { IGetMoviesGenres, getMoviesGenres, IMovie } from "../api";
 import { makeImagePath } from "../utils";
 import TypeContext from '../context';
 
-const Box = styled(motion.div)<{ $bgPhoto: string }>`
-  background-image: url(${(props) => props.$bgPhoto});
-  background-size: cover;
-  background-position: center center;
+const Box = styled(motion.div)`
   height: 200px;
-  font-size: 2em;
-  border-radius: 15px;
   cursor: pointer;
-  position: relative;
-  z-index: 100;
-  min-width: 110px;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
   .flex {
     display: flex;
   }
@@ -34,6 +29,17 @@ const Box = styled(motion.div)<{ $bgPhoto: string }>`
       float: left;
     }
   }
+`;
+const Ranking = styled.img`
+  width: 17%;
+`;
+const Poster = styled(motion.div)<{ $bgPhoto: string }>`
+  background-image: url(${(props) => props.$bgPhoto});
+  background-size: cover;
+  background-position: center center;
+  width: 82.5%;
+  height: 100%;
+  border-radius: 15px;
 `;
 const Info = styled(motion.div)`
   background-color: #181818;
@@ -50,7 +56,7 @@ const Info = styled(motion.div)`
     rgba(0, 0, 0, 1)
   );
   h4 {
-    font-size: 0.4em;
+    font-size: 0.8em;
     padding-top: 0.9em;
     padding-left: 0.5em;
   }
@@ -59,6 +65,7 @@ const Info = styled(motion.div)`
     justify-content: space-between;
     align-items: center;
     margin: 0 0.1em;
+    padding: 0.4em 0;
     svg {
       padding: 0 0.2em;
     }
@@ -77,7 +84,7 @@ const Genres = styled.ul`
 const boxVariants = {
   normal: { scale: 1 },
   hover: {
-    scale: 1.5,
+    scale: 1.4,
     zIndex: 200,
     transition: {
       delay: 0.5,
@@ -98,40 +105,85 @@ const infoVariants = {
   },
 };
 
-const SliderCard = ({ movie, type }: { movie: IMovie; type: string }) => {
+const Popular = ({
+  movie,
+  type,
+  idx,
+  page,
+}: {
+  movie: IMovie;
+  type: string;
+  idx: number;
+  page: number;
+}) => {
   const { data: genres } = useQuery<IGetMoviesGenres>(
     ["movies", "genres"],
     getMoviesGenres
   );
+  const arrImg = [
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+  ];
   const { setType } = useContext(TypeContext);
   const navigate = useNavigate();
   const onBoxClicked = (movieId: number) => {
     navigate(`/movies/${movieId}`);
     setType(type)
   };
+
   return (
-    <Box
-      $bgPhoto={makeImagePath(movie.poster_path, "w500")}
-      variants={boxVariants}
-      whileHover="hover"
-      initial="normal"
-      transition={{ type: "tween" }}
-      onClick={() => onBoxClicked(movie.id)}
-      layoutId={movie.id + type}
-    >
-      <div>
+    <Box>
+      {arrImg.map((item, index) =>
+        page === 0
+          ? index < 5 &&
+            idx === index && (
+              <Ranking
+                src={`img/${item}.svg`}
+                alt="ranking"
+                width="50px"
+                height="95px"
+                key={index}
+              />
+            )
+          : index > 4 &&
+            idx === index - 5 && (
+              <Ranking
+                src={`img/${item}.svg`}
+                alt="ranking"
+                width="50px"
+                height="95px"
+                key={index}
+              />
+            )
+      )}
+      <Poster
+        $bgPhoto={makeImagePath(movie.poster_path)}
+        variants={boxVariants}
+        whileHover="hover"
+        initial="normal"
+        transition={{ type: "tween" }}
+        layoutId={movie.id + type}
+        onClick={() => onBoxClicked(movie.id)}
+      >
         <Info variants={infoVariants}>
           <h4>{movie.title}</h4>
           <div>
             <div>
               <span>
-                <FontAwesomeIcon icon={faCirclePlus} size="2xs" />
-                <FontAwesomeIcon icon={faThumbsUp} size="2xs" />
+                <FontAwesomeIcon icon={faCirclePlus} size="lg" />
+                <FontAwesomeIcon icon={faThumbsUp} size="lg" />
               </span>
-              <FontAwesomeIcon icon={faCircleChevronDown} size="2xs" />
+              <FontAwesomeIcon icon={faCircleChevronDown} size="lg" />
             </div>
             <Genres className={window.outerWidth >= 1474 ? "flex" : "float"}>
-              {/* 창크기에 따라 적용되는 클래스 오류있음 */}
               {genres?.genres
                 .filter((item) => movie.genre_ids.includes(item.id))
                 .map((v, i) => (
@@ -140,9 +192,9 @@ const SliderCard = ({ movie, type }: { movie: IMovie; type: string }) => {
             </Genres>
           </div>
         </Info>
-      </div>
+      </Poster>
     </Box>
   );
 };
 
-export default SliderCard;
+export default Popular;

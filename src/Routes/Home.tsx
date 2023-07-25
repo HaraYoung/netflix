@@ -73,12 +73,14 @@ const Overlay = styled(motion.div)`
 const Home = () => {
   const { data: nowPlaying, isLoading: nowPlayingLoading } =
     useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
-  // const { data : nowPlaying, isLoading } = useQuery<IGetMoviesResult>(
-  //   ["movies", type],
-  //   getMovies
-  // );
-  const { data: topRated, isLoading: topRatedLoading } =
-    useQuery<IGetMoviesResult>(["movies", "topRated"], getMovieTopRated);
+  const { data: popular } = useQuery<IGetMoviesResult>(
+    ["movies", "popular"],
+    getMovies
+  );
+  const { data: topRated } = useQuery<IGetMoviesResult>(
+    ["movies", "topRated"],
+    getMovieTopRated
+  );
 
   const [type, setType] = React.useState("");
 
@@ -122,7 +124,7 @@ const Home = () => {
                 <motion.button
                   className="info-btn"
                   onClick={() => onClickMainInfo(nowPlaying.results[0].id)}
-                  layoutId={nowPlaying.results[0].id + 'nowPlaying'}
+                  layoutId={nowPlaying.results[0].id + "nowPlaying"}
                 >
                   <FontAwesomeIcon icon={faCircleInfo} />
                   상세 정보
@@ -134,10 +136,12 @@ const Home = () => {
                   <Slider movieData={nowPlaying} type="nowPlaying" />
                 </SliderArea>
               )}
-              <SliderArea>
-                <CategoryTitle>인기 영화</CategoryTitle>
-                {/* <Slider movieData="popular" /> */}
-              </SliderArea>
+              {popular && (
+                <SliderArea>
+                  <CategoryTitle>인기 영화</CategoryTitle>
+                  <Slider movieData={popular} type="popular" />
+                </SliderArea>
+              )}
               {topRated && (
                 <SliderArea>
                   <CategoryTitle>평점 높은 영화</CategoryTitle>
