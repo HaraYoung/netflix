@@ -124,7 +124,6 @@ const Home = () => {
                 <motion.button
                   className="info-btn"
                   onClick={() => onClickMainInfo(nowPlaying.results[0].id)}
-                  layoutId={nowPlaying.results[0].id + "nowPlaying"}
                 >
                   <FontAwesomeIcon icon={faCircleInfo} />
                   상세 정보

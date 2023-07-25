@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { IGetMoviesGenres, getMoviesGenres, IMovie } from "../api";
 import { makeImagePath } from "../utils";
-import TypeContext from '../context';
+import TypeContext from "../context";
 
 const Box = styled(motion.div)<{ $bgPhoto: string }>`
   background-image: url(${(props) => props.$bgPhoto});
@@ -61,6 +61,19 @@ const Info = styled(motion.div)`
     margin: 0 0.1em;
     svg {
       padding: 0 0.2em;
+      color: white;
+      &:hover {
+        opacity: 0.7;
+        transition: 0.3s;
+      }
+    }
+    span > svg {
+      color: gray;
+      &:hover {
+        color: white;
+        opacity: 1;
+        transition: 0.3s;
+      }
     }
   }
 `;
@@ -105,10 +118,22 @@ const SliderCard = ({ movie, type }: { movie: IMovie; type: string }) => {
   );
   const { setType } = useContext(TypeContext);
   const navigate = useNavigate();
+  let wishContent = false;
+  const [great, setGreat] = React.useState(false);
+  const [wish, setWish] = React.useState(false);
   const onBoxClicked = (movieId: number) => {
-    navigate(`/movies/${movieId}`);
-    setType(type)
+    if (!wishContent) navigate(`/movies/${movieId}`);
+    setType(type);
   };
+  const onClickWishContent = (btn: string) => {
+    wishContent = true;
+    if (btn === "wish") {
+      alert("내가 찜한 콘텐츠에 추가되었습니다!");
+    } else {
+      alert("좋아요");
+    }
+  };
+
   return (
     <Box
       $bgPhoto={makeImagePath(movie.poster_path, "w500")}
@@ -125,13 +150,20 @@ const SliderCard = ({ movie, type }: { movie: IMovie; type: string }) => {
           <div>
             <div>
               <span>
-                <FontAwesomeIcon icon={faCirclePlus} size="2xs" />
-                <FontAwesomeIcon icon={faThumbsUp} size="2xs" />
+                <FontAwesomeIcon
+                  icon={faCirclePlus}
+                  size="2xs"
+                  onClick={() => onClickWishContent("wish")}
+                />
+                <FontAwesomeIcon
+                  icon={faThumbsUp}
+                  size="2xs"
+                  onClick={() => onClickWishContent("great")}
+                />
               </span>
               <FontAwesomeIcon icon={faCircleChevronDown} size="2xs" />
             </div>
             <Genres className={window.outerWidth >= 1474 ? "flex" : "float"}>
-              {/* 창크기에 따라 적용되는 클래스 오류있음 */}
               {genres?.genres
                 .filter((item) => movie.genre_ids.includes(item.id))
                 .map((v, i) => (
