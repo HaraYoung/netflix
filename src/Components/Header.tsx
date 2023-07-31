@@ -7,6 +7,7 @@ import {
   motion,
   useAnimation,
 } from "framer-motion";
+import { useForm } from "react-hook-form";
 
 const Nav = styled(motion.nav)`
   display: flex;
@@ -70,9 +71,11 @@ const Search = styled.span`
   svg {
     height: 25px;
     color: white;
+    cursor: pointer;
   }
 `;
 const Input = styled(motion.input)`
+  color: white;
   transform-origin: right center;
   position: absolute;
   left: -150px;
@@ -98,6 +101,10 @@ const navVariants = {
   scroll: { backgroundColor: "rgba(0,0,0,1)" },
 };
 
+interface IForm {
+  keyword: string;
+}
+
 const Header = () => {
   const homeMatch = useMatch("/");
   const tvMatch = useMatch("tv");
@@ -110,6 +117,12 @@ const Header = () => {
     if (scroll > 100) navAnimation.start("scroll");
     else navAnimation.start("top");
   });
+
+  const { register, handleSubmit } = useForm<IForm>();
+  const onSubmit =(data: IForm) => {
+    console.log(data);
+  }
+
   return (
     <div>
       <Nav variants={navVariants} initial="top" animate={navAnimation}>
@@ -136,7 +149,7 @@ const Header = () => {
           </Items>
         </Col>
         <Col>
-          <Search>
+          <Search onSubmit ={handleSubmit(onSubmit)}>
             <motion.svg
               fill="currentColor"
               viewBox="0 0 20 20"
@@ -153,6 +166,10 @@ const Header = () => {
             </motion.svg>
             {/* <FontAwesomeIcon icon={faMagnifyingGlass}  /> */}
             <Input
+              {...register("keyword", {
+                required: "검색어를 입력해주세요.",
+                minLength: 10,
+              })}
               placeholder="Search for movie or tv show"
               initial={{ scaleX: 0 }}
               animate={{ scaleX: openSearch ? 1 : 0 }}

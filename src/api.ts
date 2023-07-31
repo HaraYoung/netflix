@@ -77,3 +77,5 @@ export function getMoviePopular() {
     `${BASE_PATH}/movie/popular?api_key=${API_KEY}&${LANGUAGE}`
   ).then((response) => response.json());
 }
+
+//https://api.themoviedb.org/3/search/multi?api_key=e08a6da350ae17b80b2a203ff78e7f16&query=Star&include_adult=false&language=ko&page=1

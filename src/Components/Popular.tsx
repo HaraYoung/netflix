@@ -1,4 +1,4 @@
-import React,{useContext} from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import { motion } from "framer-motion";
@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { IGetMoviesGenres, getMoviesGenres, IMovie } from "../api";
 import { makeImagePath } from "../utils";
-import TypeContext from '../context';
+import TypeContext from "../context";
 
 const Box = styled(motion.div)`
   height: 200px;
@@ -113,7 +113,7 @@ const Popular = ({
 }: {
   movie: IMovie;
   type: string;
-  idx: number;
+  idx: number; //슬라이더 번호
   page: number;
 }) => {
   const { data: genres } = useQuery<IGetMoviesGenres>(
@@ -136,34 +136,35 @@ const Popular = ({
   const navigate = useNavigate();
   const onBoxClicked = (movieId: number) => {
     navigate(`/movies/${movieId}`);
-    setType(type)
+    setType(type);
   };
-
+  const [sliceRankingImg] = React.useState(page === 0 ? 5 : 10);
   return (
     <Box>
-      {arrImg.map((item, index) =>
-        page === 0
-          ? index < 5 &&
-            idx === index && (
+      {arrImg
+        .slice(sliceRankingImg - 5, sliceRankingImg)
+        .map(
+          (item, index) =>
+            idx === index &&
+            (sliceRankingImg === 10 && index === 4 ? (
+                <Ranking
+                  src={`img/${item}.svg`}
+                  alt="ranking"
+                  width="150px"
+                  height="95px"
+                  key={item}
+                  style={{ transform: 'scale(1.2)'}}
+                />
+            ) : (
               <Ranking
                 src={`img/${item}.svg`}
                 alt="ranking"
                 width="50px"
                 height="95px"
-                key={index}
+                key={item}
               />
-            )
-          : index > 4 &&
-            idx === index - 5 && (
-              <Ranking
-                src={`img/${item}.svg`}
-                alt="ranking"
-                width="50px"
-                height="95px"
-                key={index}
-              />
-            )
-      )}
+            ))
+        )}
       <Poster
         $bgPhoto={makeImagePath(movie.poster_path)}
         variants={boxVariants}

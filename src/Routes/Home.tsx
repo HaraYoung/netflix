@@ -138,6 +138,7 @@ const Home = () => {
               {popular && (
                 <SliderArea>
                   <CategoryTitle>인기 영화</CategoryTitle>
+                  {/* 데이터를 10개로 잘라 props로 내려줘야함 */}
                   <Slider movieData={popular} type="popular" />
                 </SliderArea>
               )}

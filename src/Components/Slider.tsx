@@ -94,7 +94,7 @@ const Slider = ({
 
   const renderPagesBorder = () => {
     if (movieData) {
-      const boxCount = Math.floor((movieData.results.length - 1) / 6);
+      const boxCount = Math.floor((movieData.results.length - 1) / offset);
       // 반복해서 렌더링할 Box 컴포넌트 배열 생성
       const boxes = Array.from({ length: boxCount }, (_, index) => (
         <PagesBorder
@@ -148,7 +148,6 @@ const Slider = ({
                     />
                   ))
               : type === "popular"
-              // slice로 10개로 줄이기
               ? movieData.results
                   .slice(offset * page, offset * page + offset)
                   .map((movie, idx) => (
