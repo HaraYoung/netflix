@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Header from "./Components/Header";
 import Home from "./Routes/Home";
 import TvProgram from "./Routes/TvProgram";
+import Search from "./Routes/Search";
 import MovieBox from "./Components/MovieBox";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
           <Route path="movies/:movieId" element={<MovieBox movieId=""/>} />
         </Route>
         <Route path="tv" element={<TvProgram />} />
+        <Route path="search" element={<Search />} />
       </Routes>
     </>
   );

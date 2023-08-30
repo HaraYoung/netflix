@@ -10,9 +10,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { IGetMoviesGenres, getMoviesGenres, IMovie } from "../api";
+import { IGenresArr, getMoviesGenres, IMovie } from "../api";
 import { makeImagePath } from "../utils";
-import TypeContext from "../context";
+import { TypeContext } from "../context";
 
 const Box = styled(motion.div)`
   height: 200px;
@@ -106,17 +106,17 @@ const infoVariants = {
 };
 
 const Popular = ({
-  movie,
+  data,
   type,
   idx,
   page,
 }: {
-  movie: IMovie;
+  data: IMovie;
   type: string;
   idx: number; //슬라이더 번호
   page: number;
 }) => {
-  const { data: genres } = useQuery<IGetMoviesGenres>(
+  const { data: genres } = useQuery<IGenresArr>(
     ["movies", "genres"],
     getMoviesGenres
   );
@@ -147,14 +147,14 @@ const Popular = ({
           (item, index) =>
             idx === index &&
             (sliceRankingImg === 10 && index === 4 ? (
-                <Ranking
-                  src={`img/${item}.svg`}
-                  alt="ranking"
-                  width="150px"
-                  height="95px"
-                  key={item}
-                  style={{ transform: 'scale(1.2)'}}
-                />
+              <Ranking
+                src={`img/${item}.svg`}
+                alt="ranking"
+                width="150px"
+                height="95px"
+                key={item}
+                style={{ transform: "scale(1.2)" }}
+              />
             ) : (
               <Ranking
                 src={`img/${item}.svg`}
@@ -166,16 +166,16 @@ const Popular = ({
             ))
         )}
       <Poster
-        $bgPhoto={makeImagePath(movie.poster_path)}
+        $bgPhoto={makeImagePath(data.poster_path)}
         variants={boxVariants}
         whileHover="hover"
         initial="normal"
         transition={{ type: "tween" }}
-        layoutId={movie.id + type}
-        onClick={() => onBoxClicked(movie.id)}
+        layoutId={data.id + type}
+        onClick={() => onBoxClicked(data.id)}
       >
         <Info variants={infoVariants}>
-          <h4>{movie.title}</h4>
+          <h4>{data.title}</h4>
           <div>
             <div>
               <span>
@@ -186,7 +186,7 @@ const Popular = ({
             </div>
             <Genres className={window.outerWidth >= 1474 ? "flex" : "float"}>
               {genres?.genres
-                .filter((item) => movie.genre_ids.includes(item.id))
+                .filter((item) => data.genre_ids.includes(item.id))
                 .map((v, i) => (
                   <li key={i}>{i !== 0 ? `◾ ${v.name}` : v.name}</li>
                 ))}

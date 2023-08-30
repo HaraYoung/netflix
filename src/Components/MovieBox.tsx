@@ -15,7 +15,7 @@ import {
 
 import { IGetMovieDetail, getMovieDetailKo, getMovieDetailEn } from "../api";
 import { makeImagePath } from "../utils";
-import TypeContext from "../context";
+import { TypeContext } from "../context";
 
 const BoxContainer = styled(motion.div)`
   background-color: #181818;
@@ -198,7 +198,7 @@ const MovieBox = ({ movieId }: { movieId: string }) => {
         movieIdMatch &&
         movie_ko && (
           <BoxContainer
-          style={{ top: scrollY.get() + 100 }}
+            style={{ top: scrollY.get() + 100 }}
             layoutId={movieId + type}
             transition={{ delay: 0.3 }}
           >

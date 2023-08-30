@@ -10,9 +10,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { IGetMoviesGenres, getMoviesGenres, IMovie } from "../api";
+import {
+  IGenres,
+  IGenresArr,
+  getMoviesGenres,
+  getTvGenres,
+  IMovie,
+  ISearchData,
+} from "../api";
 import { makeImagePath } from "../utils";
-import TypeContext from "../context";
+import { TypeContext } from "../context";
 
 const Box = styled(motion.div)<{ $bgPhoto: string }>`
   background-image: url(${(props) => props.$bgPhoto});
@@ -111,10 +118,20 @@ const infoVariants = {
   },
 };
 
-const SliderCard = ({ movie, type }: { movie: IMovie; type: string }) => {
-  const { data: genres } = useQuery<IGetMoviesGenres>(
+const SliderCard = ({
+  data,
+  type,
+}: {
+  data: ISearchData | IMovie;
+  type: string;
+}) => {
+  const { data: movieGenres } = useQuery<IGenresArr>(
     ["movies", "genres"],
     getMoviesGenres
+  );
+  const { data: tvGenres } = useQuery<IGenresArr>(
+    ["tv", "genres"],
+    getTvGenres
   );
   const { setType } = useContext(TypeContext);
   const navigate = useNavigate();
@@ -133,20 +150,34 @@ const SliderCard = ({ movie, type }: { movie: IMovie; type: string }) => {
       alert("좋아요");
     }
   };
+  let title = data.title;
+  let genreList: IGenres[] | undefined;
+  if (type === "search" && "media_type" in data && data.media_type === "tv") {
+    title = data.name;
+    genreList = tvGenres?.genres;
+  } else {
+    genreList = movieGenres?.genres;
+  }
+  let matchingGenres: (IGenres | undefined)[] = [];
 
+  if (data.genre_ids) {
+    matchingGenres = data.genre_ids.map((genreId) =>
+      genreList?.find((genre) => genre.id === genreId)
+    );
+  }
   return (
     <Box
-      $bgPhoto={makeImagePath(movie.poster_path, "w500")}
+      $bgPhoto={makeImagePath(data.poster_path, "w500")}
       variants={boxVariants}
       whileHover="hover"
       initial="normal"
       transition={{ type: "tween" }}
-      onClick={() => onBoxClicked(movie.id)}
-      layoutId={movie.id + type}
+      onClick={() => onBoxClicked(data.id)}
+      layoutId={data.id + type}
     >
       <div>
         <Info variants={infoVariants}>
-          <h4>{movie.title}</h4>
+          <h4>{title}</h4>
           <div>
             <div>
               <span>
@@ -164,11 +195,11 @@ const SliderCard = ({ movie, type }: { movie: IMovie; type: string }) => {
               <FontAwesomeIcon icon={faCircleChevronDown} size="2xs" />
             </div>
             <Genres className={window.outerWidth >= 1474 ? "flex" : "float"}>
-              {genres?.genres
-                .filter((item) => movie.genre_ids.includes(item.id))
-                .map((v, i) => (
-                  <li key={i}>{i !== 0 ? `◾ ${v.name}` : v.name}</li>
-                ))}
+              {matchingGenres?.map((genre, index) => (
+                <li key={index}>
+                  {genre ? (index !== 0 ? `◾ ${genre.name}` : genre.name) : null}
+                </li>
+              ))}
             </Genres>
           </div>
         </Info>

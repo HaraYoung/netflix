@@ -8,7 +8,7 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
 import { IGetMoviesResult, getMovies, getMovieTopRated } from "../api";
 import { makeImagePath } from "../utils";
-import TypeContext from "../context";
+import { TypeContext } from "../context";
 
 import MovieBox from "../Components/MovieBox";
 import Slider from "../Components/Slider";

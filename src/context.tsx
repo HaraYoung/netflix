@@ -5,10 +5,8 @@ interface ItypeContext{
     setType: (type : string) => void;
 }
 
-const TypeContext = createContext<ItypeContext>({
+export const TypeContext = createContext<ItypeContext>({
     type: '',
     setType: () => {},
   });
-
-export default TypeContext;
 

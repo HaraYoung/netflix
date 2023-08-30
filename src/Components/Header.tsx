@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Link, useMatch } from "react-router-dom";
+import { Link, useMatch, useNavigate } from "react-router-dom";
 import {
   useScroll,
   useMotionValueEvent,
@@ -63,7 +63,7 @@ const ItemBorder = styled(motion.span)`
   right: 0;
   margin: 0 auto;
 `;
-const Search = styled.span`
+const Search = styled.form`
   padding-right: 5em;
   position: relative;
   display: flex;
@@ -106,22 +106,27 @@ interface IForm {
 }
 
 const Header = () => {
+  const navigate = useNavigate();
   const homeMatch = useMatch("/");
   const tvMatch = useMatch("tv");
+  const searchMatch = useMatch("search");
   const [openSearch, setOpenSearch] = React.useState(false);
   const navAnimation = useAnimation();
 
   const onClickSearch = () => setOpenSearch((prev) => !prev);
+  if (searchMatch) !openSearch && setOpenSearch(true);
+
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (scroll) => {
     if (scroll > 100) navAnimation.start("scroll");
     else navAnimation.start("top");
   });
-
-  const { register, handleSubmit } = useForm<IForm>();
-  const onSubmit =(data: IForm) => {
-    console.log(data);
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { defaultValues },
+  } = useForm<IForm>();
+  const onSubmit = (data: IForm) => navigate(`/search?keyword=${data.keyword}`);
 
   return (
     <div>
@@ -149,7 +154,7 @@ const Header = () => {
           </Items>
         </Col>
         <Col>
-          <Search onSubmit ={handleSubmit(onSubmit)}>
+          <Search onSubmit={handleSubmit(onSubmit)}>
             <motion.svg
               fill="currentColor"
               viewBox="0 0 20 20"
@@ -166,10 +171,7 @@ const Header = () => {
             </motion.svg>
             {/* <FontAwesomeIcon icon={faMagnifyingGlass}  /> */}
             <Input
-              {...register("keyword", {
-                required: "검색어를 입력해주세요.",
-                minLength: 10,
-              })}
+              {...register("keyword")}
               placeholder="Search for movie or tv show"
               initial={{ scaleX: 0 }}
               animate={{ scaleX: openSearch ? 1 : 0 }}

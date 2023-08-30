@@ -142,7 +142,7 @@ const Slider = ({
                   .slice(offset * page, offset * page + offset) //페이지 네이션과 같은 처리
                   .map((movie) => (
                     <SliderCard
-                      movie={movie}
+                      data={movie}
                       key={movie.id + type}
                       type={type}
                     />
@@ -152,7 +152,7 @@ const Slider = ({
                   .slice(offset * page, offset * page + offset)
                   .map((movie, idx) => (
                     <Popular
-                      movie={movie}
+                      data={movie}
                       key={movie.id + type}
                       type={type}
                       idx={idx}
@@ -163,7 +163,7 @@ const Slider = ({
                   .slice(offset * page, offset * page + offset)
                   .map((movie) => (
                     <SliderCard
-                      movie={movie}
+                      data={movie}
                       key={movie.id + type}
                       type={type}
                     />
